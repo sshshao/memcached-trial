@@ -25,6 +25,9 @@ app.use(function(req, res, next) {
 
 http.createServer(app).listen(8080);
 
+router.get('/', function(req, res) {
+    res.send('Hello World');
+})
 router.get('/hw7', query.get);
 
 

@@ -1,13 +1,6 @@
 const mysql = require('mysql');
 const pass = require('./pass');
 
-var connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: pass.MYSQL_PW,
-    database: pass.MYSQL_DB
-});
-
 exports.get = function(req, res) {
     var club = req.query.club;
     var pos = req.query.pos;
@@ -20,8 +13,15 @@ exports.get = function(req, res) {
                 'FROM `assists`' +
                 'WHERE `Club`=?' +
                 'AND `POS`=?' +
-            ');'
-        'SELECT AVG(A) FROM assists WHERE Club=? AND POS=?;';
+            ');' +
+        'SELECT AVG(`A`) FROM `assists` WHERE `Club`=? AND `POS`=?';
+    
+    var connection = mysql.createConnection({
+        host: 'localhost',
+        user: 'root',
+        password: pass.MYSQL_PW,
+        database: pass.MYSQL_DB
+    });
     
     connection.connect();
     connection.query(q, [club, pos, club, pos, club, pos], function(err, results, fields) {
