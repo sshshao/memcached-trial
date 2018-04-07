@@ -14,7 +14,7 @@ exports.get = function(req, res) {
                 'WHERE `Club`=?' +
                 'AND `POS`=?' +
             ')' +
-        'ORDER BY `GS` DESC' +
+        'ORDER BY `GS` DESC;' +
         'SELECT AVG(`A`) as `A` FROM `assists` WHERE `Club`=? AND `POS`=?';
 
     var pool = mysql.createPool({
@@ -24,7 +24,7 @@ exports.get = function(req, res) {
         password: pass.MYSQL_PW,
         database: pass.MYSQL_DB,
         multipleStatements: true,
-        queueLimit=0
+        queueLimit: 0
     });
 
     pool.query(q, [club, pos, club, pos, club, pos], function(err, results, fields) {
