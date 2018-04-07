@@ -51,6 +51,9 @@ function reachDB(club, pos, res) {
         if(player == 'Gonzalo VerÃ³n') {
             player = 'Gonzalo Verón';
         }
+        if(player == 'NicolÃ¡s Lodeiro') {
+            player = 'Nicolás Lodeiro';
+        }
         
         result = {
             'club': club,
