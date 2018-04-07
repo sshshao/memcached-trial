@@ -16,7 +16,8 @@ exports.get = function(req, res) {
             ');' +
         'SELECT AVG(`A`) as `A` FROM `assists` WHERE `Club`=? AND `POS`=?';
 
-    var connection = mysql.createConnection({
+    var pool = mysql.createPool({
+        connectionLimit: 100,
         host: 'localhost',
         user: 'root',
         password: pass.MYSQL_PW,
@@ -24,18 +25,18 @@ exports.get = function(req, res) {
         multipleStatements: true
     });
 
-    connection.connect();
-    connection.query(q, [club, pos, club, pos, club, pos], function(err, results, fields) {
+    pool.query(q, [club, pos, club, pos, club, pos], function(err, results, fields) {
+        if(err) throw err;
+
         console.log(results[0][0]);
-        console.log(results[0][1]);
+        console.log(results[1][0]);
         
         res.send({
             'club': club,
             'pos': pos,
             'max_assists': results[0][0].A,
-            'player': result[0][0].Player,
-            'avg_assists': result[1][0].A
+            'player': results[0][0].Player,
+            'avg_assists': results[1][0].A
         });
     });
-    connection.end();
 }
