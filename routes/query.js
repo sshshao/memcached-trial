@@ -1,9 +1,16 @@
 const mysql = require('mysql');
 const pass = require('./pass');
+var Memcached = require('memcached');
+
+var memcached = new Memcached('127.0.0.1:11211', {retries: 10, retry: 10000, poolSize: 50});
 
 exports.get = function(req, res) {
     var club = req.query.club;
     var pos = req.query.pos;
+
+    memcached.get(club+pos, function (err, data) {
+        console.log(data);
+    });
 
     var q = 'SELECT *' +
         'FROM `assists`' +
@@ -18,7 +25,7 @@ exports.get = function(req, res) {
         'SELECT AVG(`A`) as `A` FROM `assists` WHERE `Club`=? AND `POS`=?';
 
     var pool = mysql.createPool({
-        connectionLimit: 100,
+        connectionLimit: 1500,
         host: 'localhost',
         user: 'root',
         password: pass.MYSQL_PW,
@@ -30,15 +37,26 @@ exports.get = function(req, res) {
     pool.query(q, [club, pos, club, pos, club, pos], function(err, results, fields) {
         if(err) throw err;
 
-        console.log(results[0][0]);
-        console.log(results[1][0]);
+        var player = results[0][0].Player;
+        var max_assists = results[0][0].A;
+        var avg_assists = results[1][0].A;
+        if(player == 'Gonzalo VerÃ³n') {
+            player = 'Gonzalo Verón';
+        }
         
-        res.send({
+        result = {
             'club': club,
             'pos': pos,
-            'max_assists': results[0][0].A,
-            'player': results[0][0].Player,
-            'avg_assists': results[1][0].A
+            'max_assists': max_assists,
+            'player': player,
+            'avg_assists': avg_assists
+        };
+
+        memcached.add(club+pos, result, 1000, function (err) { 
+            if(err) throw err;
         });
+
+        res.charset = 'utf-8';
+        res.send(result);
     });
 }
