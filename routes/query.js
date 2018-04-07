@@ -9,9 +9,17 @@ exports.get = function(req, res) {
     var pos = req.query.pos;
 
     memcached.get(club+pos, function (err, data) {
-        console.log(data);
+        if(data != null) {
+            res.send(data);
+            return;
+        }
+        else {
+            reachDB(club, pos, res);
+        }
     });
+}
 
+function reachDB(club, pos, res) {
     var q = 'SELECT *' +
         'FROM `assists`' +
         'WHERE `Club`=? AND `POS`=?' +
