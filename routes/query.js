@@ -26,10 +26,9 @@ function reachDB(club, pos, res) {
             'AND A=(' +
                 'SELECT MAX(`A`)' +
                 'FROM `assists`' +
-                'WHERE `Club`=?' +
-                'AND `POS`=?' +
+                'WHERE `Club`=? AND `POS`=?' +
             ')' +
-        'ORDER BY `GS` DESC;' +
+        'ORDER BY `GS` DESC, Player;' +
         'SELECT AVG(`A`) as `A` FROM `assists` WHERE `Club`=? AND `POS`=?';
 
     var pool = mysql.createPool({
