@@ -43,23 +43,13 @@ function reachDB(club, pos, res) {
 
     pool.query(q, [club, pos, club, pos, club, pos], function(err, results, fields) {
         if(err) throw err;
-
-        var player = results[0][0].Player;
-        var max_assists = results[0][0].A;
-        var avg_assists = results[1][0].A;
-        if(player == 'Gonzalo VerÃ³n') {
-            player = 'Gonzalo Verón';
-        }
-        if(player == 'NicolÃ¡s Lodeiro') {
-            player = 'Nicolás Lodeiro';
-        }
         
         result = {
             'club': club,
             'pos': pos,
-            'max_assists': max_assists,
-            'player': player,
-            'avg_assists': avg_assists
+            'max_assists': results[0][0].A,
+            'player': results[0][0].Player,
+            'avg_assists': results[1][0].A
         };
 
         memcached.add(club+pos, result, 1000, function (err) { 
